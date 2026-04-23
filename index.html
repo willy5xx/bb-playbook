@@ -1,0 +1,943 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<title>bright.blue Playbook</title>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --accent: #1A6BFF;
+    --accent-soft: rgba(26, 107, 255, 0.12);
+    --page-bg: #F0F2F5;
+    --surface: #FAFBFC;
+    --sidebar-bg: #ffffff;
+    --sidebar-border: #E5E7EB;
+    --sidebar-hover: #F3F4F6;
+    --sidebar-text: #374151;
+    --sidebar-text-dim: #6B7280;
+    --sidebar-heading: #9CA3AF;
+    --ink: #0D0F14;
+    --ink-2: #374151;
+    --ink-3: #6B7280;
+    --line: #E5E7EB;
+    --line-soft: #EEF0F3;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; background: var(--page-bg); }
+  body {
+    font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--ink);
+    overflow: hidden;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
+
+  /* Layout */
+  #app { display: grid; grid-template-columns: 260px 1fr; height: 100%; }
+
+  /* Sidebar — light shell */
+  nav {
+    background: var(--sidebar-bg);
+    border-right: 1px solid var(--sidebar-border);
+    overflow-y: auto;
+    padding: 20px 0 24px;
+    color: var(--sidebar-text);
+  }
+  nav::-webkit-scrollbar { width: 8px; }
+  nav::-webkit-scrollbar-thumb { background: #D1D5DB; border-radius: 4px; }
+  nav::-webkit-scrollbar-track { background: transparent; }
+
+  .brand {
+    padding: 0 20px 18px;
+    border-bottom: 1px solid var(--sidebar-border);
+    display: flex; align-items: center; gap: 10px;
+  }
+  .brand .logo {
+    width: 28px; height: 28px; border-radius: 7px;
+    background: linear-gradient(135deg, var(--accent) 0%, #5B8FFF 100%);
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 13px; color: #fff;
+    letter-spacing: -.5px;
+    box-shadow: 0 0 0 1px rgba(255,255,255,.06) inset;
+  }
+  .brand .titles { line-height: 1.25; }
+  .brand .title { font-size: 13px; font-weight: 600; color: var(--ink); letter-spacing: -.1px; }
+  .brand .subtitle { font-size: 11px; color: var(--sidebar-text-dim); margin-top: 1px; }
+
+  .nav-section { margin-top: 18px; }
+  .nav-section h3 {
+    margin: 0; padding: 8px 20px 6px;
+    font-size: 10px; font-weight: 600;
+    color: var(--sidebar-heading); letter-spacing: 1.2px; text-transform: uppercase;
+  }
+  .tab {
+    display: flex; align-items: center; justify-content: space-between; gap: 8px;
+    width: 100%;
+    text-align: left;
+    background: none; border: none;
+    padding: 8px 20px;
+    font: inherit; font-size: 13px; font-weight: 500;
+    color: var(--sidebar-text);
+    cursor: pointer;
+    border-left: 2px solid transparent;
+    transition: background .12s ease, color .12s ease, border-color .12s ease;
+  }
+  .tab:hover { background: var(--sidebar-hover); color: var(--ink); }
+  .tab.active {
+    background: var(--accent-soft);
+    color: var(--accent);
+    font-weight: 600;
+    border-left-color: var(--accent);
+  }
+  .tab .pill {
+    display: inline-block;
+    font-size: 9.5px; font-weight: 600;
+    padding: 2px 7px; border-radius: 10px;
+    background: var(--accent); color: #fff;
+    letter-spacing: .3px;
+    line-height: 1.4;
+  }
+  .tab .muted-pill {
+    background: #E5E7EB; color: #6B7280;
+  }
+
+  /* Main panel */
+  main { position: relative; overflow: hidden; background: var(--page-bg); }
+  .panel-header {
+    position: absolute; top: 0; left: 0; right: 0;
+    padding: 18px 28px 14px;
+    border-bottom: 1px solid var(--line);
+    background: var(--surface);
+    z-index: 5;
+  }
+  .panel-header h1 {
+    margin: 0;
+    font-size: 17px; font-weight: 600;
+    color: var(--ink); letter-spacing: -.2px;
+  }
+  .panel-header .meta {
+    font-size: 12px; color: var(--ink-3);
+    margin-top: 4px; font-weight: 400;
+  }
+  #chart { position: absolute; top: 66px; left: 0; right: 0; bottom: 0; }
+  #chart svg { width: 100% !important; height: 100% !important; max-width: none !important; background: var(--page-bg); }
+
+  /* Legend */
+  #legend {
+    position: fixed;
+    bottom: 20px; right: 20px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    box-shadow: 0 1px 2px rgba(13,15,20,.04), 0 8px 24px rgba(13,15,20,.06);
+    font-size: 12px;
+    z-index: 100;
+    max-width: 248px;
+    overflow: hidden;
+  }
+  #legend-toggle {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 10px; padding: 10px 14px;
+    cursor: pointer; user-select: none;
+    font-weight: 600; font-size: 10.5px; letter-spacing: 1px; text-transform: uppercase;
+    color: var(--ink-3);
+  }
+  #legend-toggle:hover { background: var(--page-bg); }
+  #legend-toggle .chev { transition: transform .15s ease; font-size: 10px; }
+  #legend.collapsed #legend-toggle .chev { transform: rotate(-90deg); }
+  #legend-body { padding: 6px 14px 14px; border-top: 1px solid var(--line-soft); }
+  #legend.collapsed #legend-body { display: none; }
+  .legend-row { display: flex; align-items: center; gap: 9px; margin: 6px 0; color: var(--ink-2); }
+  .swatch { width: 12px; height: 12px; border-radius: 3px; border: 1px solid rgba(13,15,20,.12); flex-shrink: 0; }
+  .legend-section { margin-top: 10px; padding-top: 8px; border-top: 1px solid var(--line-soft); }
+  .legend-section h3 {
+    margin: 0 0 6px; font-size: 10px; font-weight: 600;
+    letter-spacing: 1px; text-transform: uppercase; color: var(--ink-3);
+  }
+
+  .hint {
+    position: absolute; bottom: 20px; left: 280px;
+    color: var(--ink-2); font-size: 11px;
+    background: var(--surface); padding: 5px 11px;
+    border-radius: 6px; border: 1px solid var(--line);
+    z-index: 50;
+    font-weight: 500;
+  }
+</style>
+</head>
+<body>
+
+<div id="app">
+
+  <nav>
+    <div class="brand">
+      <div class="logo">b.</div>
+      <div class="titles">
+        <div class="title">bright.blue Playbook</div>
+        <div class="subtitle">Closed-Loop Retail Media Attribution</div>
+      </div>
+    </div>
+
+    <div class="nav-section">
+      <h3>Overview</h3>
+      <button class="tab" data-tab="overview">Map</button>
+    </div>
+
+    <div class="nav-section">
+      <h3>Sales Channels</h3>
+      <button class="tab" data-tab="in-machine">In-Machine <span class="pill">⭐</span></button>
+      <button class="tab" data-tab="in-app">In-App <span class="pill muted-pill">P2+</span></button>
+      <button class="tab" data-tab="off-machine">Off-Machine <span class="pill muted-pill">P3+</span></button>
+    </div>
+
+    <div class="nav-section">
+      <h3>Implementation Phases</h3>
+      <button class="tab" data-tab="phase-0">Phase 0 — Foundation <span class="pill">⭐</span></button>
+      <button class="tab" data-tab="phase-1">Phase 1 — MVP Launch</button>
+      <button class="tab" data-tab="phase-2">Phase 2 — Retention</button>
+      <button class="tab" data-tab="phase-3">Phase 3 — Off-Machine</button>
+      <button class="tab" data-tab="phase-4">Phase 4 — Measurement</button>
+      <button class="tab" data-tab="phase-5">Phase 5 — Scale</button>
+    </div>
+
+    <div class="nav-section">
+      <h3>Apr 23 Call</h3>
+      <button class="tab" data-tab="dead-stock">Dead-Stock Acquisition <span class="pill">NEW</span></button>
+      <button class="tab" data-tab="consultancy-flywheel">Consultancy Flywheel <span class="pill">NEW</span></button>
+      <button class="tab" data-tab="guest-rescue">Guest Campaign Rescue <span class="pill">NEW</span></button>
+      <button class="tab" data-tab="identity-research">Identity Resolution <span class="pill">NEW</span></button>
+      <button class="tab" data-tab="points-arch">Points Architecture <span class="pill">NEW</span></button>
+      <button class="tab" data-tab="off-machine-detail">Off-Machine Models <span class="pill">NEW</span></button>
+    </div>
+
+    <div class="nav-section">
+      <h3>Aside</h3>
+      <button class="tab" data-tab="b2c">Why Customers Care</button>
+    </div>
+  </nav>
+
+  <main>
+    <div class="panel-header">
+      <h1 id="panel-title">—</h1>
+      <div class="meta" id="panel-meta">—</div>
+    </div>
+    <div id="chart"></div>
+  </main>
+
+</div>
+
+<div class="hint">scroll to zoom · drag to pan</div>
+
+<div id="legend">
+  <div id="legend-toggle">
+    <span>Legend</span>
+    <span class="chev">▾</span>
+  </div>
+  <div id="legend-body">
+    <div class="legend-row"><span class="swatch" style="background:#183EF6;border-color:#183EF6"></span>North Star</div>
+    <div class="legend-row"><span class="swatch" style="background:#8CA0FD;border-color:#183EF6"></span>Identity Ledger</div>
+    <div class="legend-row"><span class="swatch" style="background:#BAC5FD;border-color:#183EF6"></span>Section Header</div>
+    <div class="legend-row"><span class="swatch" style="background:#FFBC7D;border-color:#FFBC7D"></span>Current Focus ⭐</div>
+    <div class="legend-section">
+      <h3>Steps</h3>
+      <div class="legend-row"><span class="swatch" style="background:#FFF3E5;border-color:#FFBC7D"></span>Current-phase step</div>
+      <div class="legend-row"><span class="swatch" style="background:#ffffff;border-color:#183EF6"></span>Defined step</div>
+      <div class="legend-row"><span class="swatch" style="background:#F9FAFD;border-color:#C8D5DC;border-style:dashed"></span>TBD / boilerplate</div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/svg-pan-zoom@3.6.1/dist/svg-pan-zoom.min.js"></script>
+
+<script>
+// shared classDef block used by every diagram
+const CLASSES = `
+    classDef northstar fill:#183EF6,color:#ffffff,stroke:#050519,stroke-width:2px
+    classDef ledger fill:#8CA0FD,color:#050519,stroke:#183EF6,stroke-width:2px
+    classDef header fill:#BAC5FD,color:#050519,stroke:#183EF6,stroke-width:2px
+    classDef headerFocus fill:#FFBC7D,color:#050519,stroke:#183EF6,stroke-width:3px
+    classDef step fill:#ffffff,color:#050519,stroke:#183EF6,stroke-width:1.5px
+    classDef stepFocus fill:#FFF3E5,color:#050519,stroke:#FFBC7D,stroke-width:2px
+    classDef tbd fill:#F9FAFD,color:#69727d,stroke:#C8D5DC,stroke-width:1px,stroke-dasharray:4 3
+    classDef aside fill:#F9FAFD,color:#050519,stroke:#C8D5DC,stroke-width:1px
+    classDef gate fill:#EEF2FF,color:#050519,stroke:#183EF6,stroke-width:2px
+`;
+
+// ============================================================
+// Diagrams — one per tab. Each is small and focused.
+// ============================================================
+const DIAGRAMS = {
+  overview: {
+    title: "Playbook Overview",
+    meta: "the map — north star, channels, and phase progression",
+    src: `
+flowchart TB
+${CLASSES}
+    NS["🌟 <b>NORTH STAR</b><br/>Closed-Loop Retail Media Attribution"]:::northstar
+    IL["🔑 Customer Identity Ledger<br/>verified phone · consent · promo_id events"]:::ledger
+    NS --> IL
+
+    subgraph CH["💰 Sales Channels to Brands"]
+        direction LR
+        IM["🖥️ In-Machine<br/>⭐ first focus"]:::headerFocus
+        IA["📱 In-App<br/>phase 2+"]:::header
+        OM["🛒 Off-Machine<br/>phase 3+"]:::header
+    end
+
+    subgraph PH["🚦 Implementation Phases"]
+        direction LR
+        P0["<b>Phase 0</b> ⭐<br/>Foundation"]:::headerFocus
+        P1["<b>Phase 1</b><br/>MVP Launch"]:::header
+        P2["<b>Phase 2</b><br/>Retention"]:::tbd
+        P3["<b>Phase 3</b><br/>Off-Machine"]:::tbd
+        P4["<b>Phase 4</b><br/>Measurement"]:::tbd
+        P5["<b>Phase 5</b><br/>Scale"]:::tbd
+        P0 --> P1 --> P2 --> P3 --> P4 --> P5
+    end
+
+    IL --> CH
+    IL --> PH
+
+    P1 -. unlocks .-> IM
+    P2 -. unlocks .-> IA
+    P3 -. unlocks .-> OM
+`},
+
+  "in-machine": {
+    title: "🖥️ In-Machine Sales Channel",
+    meta: "⭐ first focus · phase 0 / phase 1 · DOOH + sampling + dead-stock acquisition + survey insights",
+    src: `
+flowchart LR
+${CLASSES}
+    H["<b>🖥️ In-Machine</b><br/>sell exposure, trial, insight,<br/>and redemption at the machine"]:::headerFocus
+
+    subgraph SELL["What we sell to brands"]
+        direction TB
+        S1["① SKU Placement<br/>✅ sellable today<br/><i>shelf fee</i>"]:::step
+        S2["② Reach Package<br/>✅ sellable today<br/><i>DOOH + verified exposure</i>"]:::step
+        S3["③ Trial Package ⭐<br/>brand-funded sampling<br/><i>fee per verified redemption</i>"]:::stepFocus
+        S4["④ Dead-Stock Acquisition ⭐<br/>expiring / underperforming SKUs<br/>discounted or free · gated behind<br/>loyalty signup · near-zero cost"]:::stepFocus
+        S5["⑤ Survey Insight Package<br/>post-trial survey data sold to brand<br/><i>why customers did not buy</i>"]:::stepFocus
+    end
+
+    subgraph BUILD["What we build to enable it"]
+        direction TB
+        B1["Campaign CMS<br/>promo_id · screens · creative"]:::stepFocus
+        B2["DOOH slot scheduling"]:::stepFocus
+        B3["QR to signup form<br/>phone verify + consent"]:::stepFocus
+        B4["Redemption code<br/>to machine session"]:::stepFocus
+        B5["Free product dispensing"]:::stepFocus
+        B6["Post-trial survey flow<br/>short survey after redemption"]:::stepFocus
+        B7["Post-campaign<br/>brand dashboard + survey report"]:::stepFocus
+        B1 --> B2 --> B3 --> B4 --> B5 --> B6 --> B7
+    end
+
+    H --> SELL
+    H --> BUILD
+`},
+
+  "in-app": {
+    title: "📱 In-App Sales Channel",
+    meta: "phase 2+ · banners, push, and offer feed to identified users",
+    src: `
+flowchart LR
+${CLASSES}
+    H["<b>📱 In-App</b><br/>sell attention and<br/>targeted offers to our users"]:::header
+
+    subgraph SELL["What we sell to brands"]
+        direction TB
+        S1["In-app banner placements"]:::step
+        S2["Push-notification campaigns"]:::step
+        S3["Targeted offer feed<br/>by behavior segment"]:::step
+    end
+
+    subgraph BUILD["What we build to enable it"]
+        direction TB
+        B0["Identified user base<br/><i>prereq — from In-Machine sampling</i>"]:::step
+        B1["In-app offer feed"]:::step
+        B2["Push notification system"]:::step
+        B3["Campaign targeting<br/>by segment / behavior"]:::step
+        B4["In-app offer to<br/>machine redemption"]:::step
+        B5["Brand dashboard<br/>in-app engagement metrics"]:::step
+        B0 --> B1 --> B2 --> B3 --> B4 --> B5
+    end
+
+    H --> SELL
+    H --> BUILD
+`},
+
+  "off-machine": {
+    title: "🛒 Off-Machine Sales Channel",
+    meta: "phase 3+ · cashback and brand↔retailer bridge via receipt scan",
+    src: `
+flowchart LR
+${CLASSES}
+    H["<b>🛒 Off-Machine</b><br/>prove retail media drove<br/>downstream purchases"]:::header
+
+    subgraph SELL["What we sell to brands"]
+        direction TB
+        S1["Anywhere Conversion<br/>brand-funded cashback<br/>at partner retailers"]:::step
+        S2["Brand ↔ Retailer bridge<br/>attributed foot traffic<br/>+ per-trip charge"]:::step
+        S3["Attribution measurement<br/>always-on lift reporting"]:::step
+        S4["Premium retail visibility tier<br/>brand pays for in-store promotion<br/>shares cost with retailer"]:::step
+    end
+
+    subgraph COMMERCIAL["Commercial models (Apr 23)"]
+        direction TB
+        C1["A: Retailer pays for<br/>promotion on machine"]:::step
+        C2["B: Flat price + per<br/>verified purchase charge"]:::step
+        C3["C: Brand pays premium tier<br/>splits cost with retailer"]:::step
+        C4["D: Brand gets data<br/>sells it to retailer themselves"]:::step
+    end
+
+    subgraph BUILD["What we build to enable it"]
+        direction TB
+        B1["Receipt scan SDK<br/>Veryfi"]:::step
+        B2["Brand SKU registry"]:::step
+        B3["Rules engine<br/>match line item to reward"]:::step
+        B4["Reward payout<br/>cashback or points"]:::step
+        B5["Attribution dashboard<br/>off-machine to exposure"]:::step
+        B1 --> B2 --> B3 --> B4 --> B5
+    end
+
+    H --> SELL
+    H --> COMMERCIAL
+    H --> BUILD
+`},
+
+  "phase-0": {
+    title: "Phase 0 — Foundation ⭐",
+    meta: "current phase · MVP infrastructure + dead-stock acquisition + first pilot",
+    src: `
+flowchart LR
+${CLASSES}
+    H["<b>Phase 0</b> ⭐<br/>Objective: MVP infrastructure<br/>+ dead-stock acquisition live<br/>+ first pilot signed"]:::headerFocus
+
+    subgraph PREREQ["Commercial prerequisites"]
+        direction TB
+        PR1["Confirm wholesale + retail pricing<br/>blended margin target 60%"]:::stepFocus
+        PR2["Identify dead-stock / expiring SKUs<br/>at Snap for loyalty-gated giveaway"]:::stepFocus
+        PR3["Select anchor brand<br/>Red Bull · Tenzing · Celsius · Huel"]:::stepFocus
+        PR4["Lock venue<br/>Snap Fitness · 7 machines"]:::stepFocus
+        PR5["Legal review<br/>CAP Code + consent copy"]:::stepFocus
+        PR6["Define KPIs<br/>signups · samples dispensed · survey responses"]:::stepFocus
+        PR1 --> PR2 --> PR3 --> PR4 --> PR5 --> PR6
+    end
+
+    subgraph BUILD["Technical build"]
+        direction TB
+        B1["Phone verify<br/>+ consent ledger"]:::stepFocus
+        B2["Campaign model<br/>promo_id + campaign_events"]:::stepFocus
+        B3["QR signup to<br/>redemption code flow"]:::stepFocus
+        B4["Post-redemption<br/>survey flow"]:::stepFocus
+        B5["Post-campaign<br/>brand dashboard + survey report"]:::stepFocus
+        B1 --> B2 --> B3 --> B4 --> B5
+    end
+
+    GATE["<b>Gate to Phase 1</b><br/>Trial pilot signed by 1 brand<br/>OR dead-stock acquisition proving signups"]:::gate
+
+    H --> PREREQ
+    H --> BUILD
+    PREREQ --> GATE
+    BUILD --> GATE
+`},
+
+  "phase-1": {
+    title: "Phase 1 — MVP Launch",
+    meta: "trial package pilot · 7-day brand-funded sampling",
+    src: `
+flowchart LR
+${CLASSES}
+    H["<b>Phase 1</b><br/>Objective: execute first pilot<br/>+ prove brand willingness to pay"]:::header
+
+    subgraph RUN["Pilot execution"]
+        direction TB
+        R1["Sign first brand"]:::step
+        R2["Produce DOOH creative"]:::step
+        R3["Stock sampling SKUs<br/>at pilot machines"]:::step
+        R4["Run 7-day campaign"]:::step
+        R5["Deliver post-campaign<br/>brand report"]:::step
+        R1 --> R2 --> R3 --> R4 --> R5
+    end
+
+    subgraph TARGETS["Targets"]
+        direction TB
+        T1["500 – 1,000<br/>identified users"]:::step
+        T2["Cost per identified user<br/>≤ COGS of sample"]:::step
+        T3["Samples dispensed<br/>per campaign day"]:::step
+    end
+
+    GATE["<b>Gate to Phase 2</b><br/>1 brand renews OR 2nd brand signs"]:::gate
+
+    H --> RUN
+    H --> TARGETS
+    RUN --> GATE
+    TARGETS --> GATE
+`},
+
+  "phase-2": {
+    title: "Phase 2 — Retention + 2nd Campaign",
+    meta: "retention mechanics · premium on-machine UX · identity upgrades · second brand campaign",
+    src: `
+flowchart LR
+${CLASSES}
+    H["<b>Phase 2</b><br/>Objective: turn identified<br/>users into repeat visitors"]:::header
+
+    subgraph BUILD["Build"]
+        direction TB
+        B1["Streak mechanic<br/>every 10 purchases = 1 free"]:::step
+        B2["Premium on-machine UX<br/>blue glow · points visible · member-only UI<br/>visually distinct from non-member screen"]:::step
+        B3["Identity upgrade: USB NFC reader<br/>~$13/unit · open USB port on machine<br/>reads Wallet passes or NFC loyalty cards"]:::step
+        B4["Card-linked earning<br/>Adyen card alias · recognise returning card<br/>auto-earn without scanning"]:::step
+        B5["Bright Connect integration<br/>loyalty campaign tools inside Connect"]:::tbd
+        B1 --> B2 --> B3 --> B4 --> B5
+    end
+
+    subgraph SELL["Sell"]
+        direction TB
+        S1["2nd brand Trial campaign<br/>with survey insight package"]:::step
+        S2["Upgrade Reach package<br/>with engagement + survey reporting"]:::step
+        S3["Guest campaign mid-flight rescue<br/>loyalty discount + survey on underperformers"]:::step
+    end
+
+    GATE["<b>Gate to Phase 3</b><br/>meaningful 2nd-purchase rate<br/>on identified cohort"]:::gate
+
+    H --> BUILD
+    H --> SELL
+    BUILD --> GATE
+    SELL --> GATE
+`},
+
+  "phase-3": {
+    title: "Phase 3 — Off-Machine (Anywhere Conversion)",
+    meta: "boilerplate · receipt-scan attribution + shop online launches",
+    src: `
+flowchart LR
+${CLASSES}
+    H["<b>Phase 3</b><br/>Objective: prove exposure drives<br/>purchases beyond our machines"]:::header
+
+    subgraph BUILD["Build (TBD)"]
+        direction TB
+        B1["TBD — receipt scan SDK"]:::tbd
+        B2["TBD — brand SKU registry"]:::tbd
+        B3["TBD — rules engine"]:::tbd
+        B4["TBD — reward payout"]:::tbd
+    end
+
+    subgraph SELL["Sell (TBD)"]
+        direction TB
+        S1["TBD — Anywhere Conversion package<br/>brand-funded off-machine reward"]:::tbd
+        S2["TBD — shop online bundles<br/>'selling what's not in the machine'"]:::tbd
+    end
+
+    GATE["<b>Gate to Phase 4</b><br/>first verified off-machine redemption"]:::gate
+
+    H --> BUILD
+    H --> SELL
+    BUILD --> GATE
+    SELL --> GATE
+`},
+
+  "phase-4": {
+    title: "Phase 4 — Measurement Product",
+    meta: "boilerplate · always-on attribution + Brand ↔ Retailer bridge",
+    src: `
+flowchart LR
+${CLASSES}
+    H["<b>Phase 4</b><br/>Objective: sell attribution<br/>as its own product"]:::header
+
+    subgraph BUILD["Build (TBD)"]
+        direction TB
+        B1["TBD — lift study infra<br/>synthetic control methodology"]:::tbd
+        B2["TBD — always-on<br/>attribution dashboard"]:::tbd
+    end
+
+    subgraph SELL["Sell (TBD)"]
+        direction TB
+        S1["TBD — measurement product<br/>monthly measurement fee"]:::tbd
+        S2["TBD — Brand ↔ Retailer bridge<br/>entry fee + per-trip"]:::tbd
+        S3["TBD — subscriptions mature"]:::tbd
+    end
+
+    GATE["<b>Gate to Phase 5</b><br/>first paid measurement contract"]:::gate
+
+    H --> BUILD
+    H --> SELL
+    BUILD --> GATE
+    SELL --> GATE
+`},
+
+  "phase-5": {
+    title: "Phase 5 — Scale the RMN",
+    meta: "boilerplate · multi-brand attribution at scale",
+    src: `
+flowchart LR
+${CLASSES}
+    H["<b>Phase 5</b><br/>Objective: scale as a<br/>retail media network"]:::header
+
+    subgraph BUILD["Build (TBD)"]
+        direction TB
+        B1["TBD — IPN integration<br/>or private-label equivalent"]:::tbd
+        B2["TBD — multi-brand<br/>attribution at scale"]:::tbd
+    end
+
+    H --> BUILD
+`},
+
+  "dead-stock": {
+    title: "Dead-Stock Acquisition Channel",
+    meta: "Apr 23 call · near-zero-cost signup lever using expiring / underperforming inventory",
+    src: `
+flowchart TB
+${CLASSES}
+    H["<b>Dead-Stock Acquisition</b><br/>expiring or underperforming SKUs<br/>become loyalty signup fuel"]:::headerFocus
+
+    subgraph TRIGGER["What triggers it"]
+        direction TB
+        T1["Product nearing expiration<br/><i>e.g. My Chai at Snap</i>"]:::stepFocus
+        T2["Poor rate of sale<br/>after planogram placement"]:::stepFocus
+        T3["Guest campaign SKU<br/>underperforming mid-flight"]:::stepFocus
+    end
+
+    subgraph FLOW["Acquisition flow"]
+        direction TB
+        F1["Flag product for write-off<br/>or steep discount"]:::stepFocus
+        F2["Attach discount / free offer<br/>gated behind loyalty signup"]:::stepFocus
+        F3["New member signs up<br/>gets discounted or free product"]:::stepFocus
+        F4["Post-redemption survey<br/>why had you not bought this before?"]:::stepFocus
+        F5["Aggregated survey data<br/>sold to brand as insight"]:::stepFocus
+        F1 --> F2 --> F3 --> F4 --> F5
+    end
+
+    subgraph WHY["Why it works"]
+        direction TB
+        W1["Near-zero cost<br/>product was being binned anyway"]:::step
+        W2["Moves dead inventory<br/>reduces waste + net loss"]:::step
+        W3["Acquires identified members<br/>phone · email · consent"]:::step
+        W4["Generates brand insight<br/>sellable survey data"]:::step
+        W5["Opens retail media pitch<br/>customers say they never heard of you"]:::step
+    end
+
+    H --> TRIGGER
+    H --> FLOW
+    H --> WHY
+`},
+
+  "consultancy-flywheel": {
+    title: "Consultancy Flywheel",
+    meta: "Apr 23 call · underperformance → survey → insight → retail media → measurable lift → renewal",
+    src: `
+flowchart TB
+${CLASSES}
+    H["<b>Consultancy Flywheel</b><br/>turn underperforming brands into<br/>retail media customers"]:::headerFocus
+
+    subgraph LOOP["The loop"]
+        direction TB
+        L1["Brand product underperforms<br/>in machine · poor rate of sale"]:::stepFocus
+        L2["Loyalty-gated discount<br/>moves the dead stock"]:::stepFocus
+        L3["Post-trial survey<br/>why had you not bought this?"]:::stepFocus
+        L4["Insight: customers say<br/>never heard of you"]:::stepFocus
+        L5["Pitch retail media<br/>DOOH · banner ads · digital OOH"]:::stepFocus
+        L6["Brand runs media spend<br/>at BB machines"]:::stepFocus
+        L7["Rate of sale increases<br/>concrete measurable ROI"]:::stepFocus
+        L8["Brand renews or expands<br/>with data-backed plan"]:::stepFocus
+        L1 --> L2 --> L3 --> L4 --> L5 --> L6 --> L7 --> L8
+        L8 -. "next cycle" .-> L1
+    end
+
+    subgraph WHO["Who uses this"]
+        direction TB
+        P1["Occa Store · Wayne<br/>advising challenger brands<br/>entering UK market"]:::step
+        P2["Charlie · Lewis<br/>brand relationship management<br/>renewal conversations"]:::step
+        P3["Tim · brand pitch<br/>retail media upsell<br/>with real customer evidence"]:::step
+    end
+
+    H --> LOOP
+    H --> WHO
+`},
+
+  "guest-rescue": {
+    title: "Guest Campaign Mid-Flight Rescue",
+    meta: "Apr 23 call · turn failing guest campaigns into consulting engagements + renewals",
+    src: `
+flowchart LR
+${CLASSES}
+    H["<b>Guest Campaign Rescue</b><br/>brand on 3-month guest campaign<br/>rate of sale terrible after month 1"]:::headerFocus
+
+    subgraph TIMELINE["Timeline"]
+        direction TB
+        M1["<b>Month 1</b><br/>poor rate of sale identified<br/>product not moving"]:::stepFocus
+        M2["<b>Month 2</b><br/>loyalty-linked discount on brand SKUs<br/>+ post-trial survey deployed"]:::stepFocus
+        M3["<b>Month 3</b><br/>survey data guides strategy<br/>test retail media if insight says<br/>lack of awareness"]:::stepFocus
+        M1 --> M2 --> M3
+    end
+
+    subgraph RENEWAL["At renewal"]
+        direction TB
+        R1["Compare to category<br/>you are the lowest-selling<br/>energy drink in our machines"]:::step
+        R2["Show customer voice<br/>real survey responses<br/>from real customers"]:::step
+        R3["Recommend action plan<br/>retail media + product detail<br/>page investment"]:::step
+        R4["Data-backed renewal<br/>not just it did not work<br/>but here is how to fix it"]:::step
+        R1 --> R2 --> R3 --> R4
+    end
+
+    H --> TIMELINE
+    H --> RENEWAL
+`},
+
+  "identity-research": {
+    title: "Identity Resolution — Adyen S1U2",
+    meta: "Apr 23 call · what works, what does not, and Phase 1 path for member identification at the machine",
+    src: `
+flowchart TB
+${CLASSES}
+    H["<b>Identity Resolution</b><br/>Adyen S1U2 terminal<br/>research findings Apr 23"]:::headerFocus
+
+    subgraph DEAD["❌ Does not work"]
+        direction TB
+        D1["Bluetooth from nook<br/>Faraday cage blocks signal<br/>metal housing + thick paint"]:::tbd
+        D2["BLE beacon for identity<br/>S1U2 beacon is for terminal-to-POS<br/>proximity routing only"]:::tbd
+        D3["NFC wallet tap for identity<br/>terminal only exposes payment tokens<br/>not loyalty credentials"]:::tbd
+        D4["Card alias as identity<br/>recognises instrument not human<br/>shared cards break it"]:::tbd
+    end
+
+    subgraph WORKS["✅ Phase 1 options"]
+        direction TB
+        W1["QR code identity ⭐<br/>member shows QR from member page<br/>machine camera scans<br/><i>highest reliability · no hardware changes</i>"]:::stepFocus
+        W2["PIN / phone number entry<br/>Are you a loyalty member?<br/>enter 4-digit code or phone<br/><i>no hardware changes</i>"]:::stepFocus
+        W3["Barcode scan from app<br/>Adyen terminal has integrated scanner<br/>triggered via terminal API<br/><i>Will already built this flow</i>"]:::stepFocus
+    end
+
+    subgraph FUTURE["🔮 Phase 2+ options"]
+        direction TB
+        F1["USB NFC reader module<br/>~$13 per unit · open USB port exists<br/>reads NFC loyalty cards or Wallet passes<br/><i>viable for 7 Snap machines</i>"]:::step
+        F2["Card-linked auto-earn<br/>Adyen card alias for passive earning<br/>no scan needed · recognise returning card<br/><i>identity by instrument not person</i>"]:::step
+        F3["Bluetooth via Adyen terminal<br/>needs more research with Pradeep<br/>beacon may support proximity connect"]:::tbd
+    end
+
+    H --> DEAD
+    H --> WORKS
+    H --> FUTURE
+`},
+
+  "points-arch": {
+    title: "Points Architecture — Open Question",
+    meta: "Apr 23 call · stamps vs currency model · needs modelling before Phase 1 ships",
+    src: `
+flowchart LR
+${CLASSES}
+    H["<b>Points Architecture</b><br/>open decision · model with<br/>real Snap margin data"]:::headerFocus
+
+    subgraph CURRENCY["💰 Currency model (current default)"]
+        direction TB
+        C1["1 point per £1 spent"]:::step
+        C2["Points have fractional £ value"]:::step
+        C3["Supports earn multipliers<br/>1.25x machine · 1.50x app · 2.0x bundles"]:::step
+        C4["Flexible for brand-funded<br/>bonus points at scale"]:::step
+        C5["Downside: users do<br/>mental maths on point values"]:::step
+    end
+
+    subgraph STAMPS["⭐ Stamps model (Will proposal)"]
+        direction TB
+        S1["1 product = 1 stamp<br/>regardless of price"]:::step
+        S2["10 stamps = 1 free product"]:::step
+        S3["Coffee-card psychology<br/>simple and familiar"]:::step
+        S4["Does not incentivise<br/>buying expensive products"]:::step
+        S5["Harder to differentiate<br/>in-app vs at-machine earn rates"]:::step
+    end
+
+    subgraph DECIDE["Must resolve before Phase 1"]
+        direction TB
+        D1["What is the value of a point?"]:::stepFocus
+        D2["What multiplier for app purchases?"]:::stepFocus
+        D3["At what intervals do<br/>free products drop?"]:::stepFocus
+        D4["LTV of customer must justify<br/>cost of free-product rewards<br/>even at conservative estimates"]:::stepFocus
+        D1 --> D2 --> D3 --> D4
+    end
+
+    H --> CURRENCY
+    H --> STAMPS
+    H --> DECIDE
+`},
+
+  "off-machine-detail": {
+    title: "Off-Machine Commercial Models",
+    meta: "Apr 23 call · retailer bridge pricing + Bright Connect integration",
+    src: `
+flowchart TB
+${CLASSES}
+    H["<b>Off-Machine Models</b><br/>retailer bridge commercial structures<br/>+ Bright Connect as platform home"]:::headerFocus
+
+    subgraph SCENARIO["Scenario at scale"]
+        direction TB
+        SC1["500 machines in London<br/>all stocking Red Bull"]:::step
+        SC2["Go to biggest retailers<br/>near gym clusters<br/>Asda · malls · high street"]:::step
+        SC3["Sponsor product promotion<br/>discount for in-store purchase<br/>tracked via receipt or QR"]:::step
+        SC1 --> SC2 --> SC3
+    end
+
+    subgraph MODELS["Commercial models"]
+        direction TB
+        M1["A: Retailer pays<br/>for promotion on machine"]:::step
+        M2["B: Flat price +<br/>per verified purchase charge"]:::step
+        M3["C: Brand pays premium tier<br/>shares cost with retailer"]:::step
+        M4["D: Brand gets our data<br/>sells promotion to retailer<br/>we provide the portal"]:::step
+    end
+
+    subgraph CONNECT["Bright Connect integration"]
+        direction TB
+        BC1["Loyalty campaign tools<br/>live inside Bright Connect"]:::step
+        BC2["Brand self-serve:<br/>who to reach · how many · budget"]:::step
+        BC3["Premium upsell within<br/>existing Connect workflows<br/>Abeer + Pradeep building pricing now"]:::step
+        BC1 --> BC2 --> BC3
+    end
+
+    subgraph VALUE["Net positive for all parties"]
+        direction TB
+        V1["Brand: more wholesale volume<br/>+ attribution data"]:::step
+        V2["Retailer: more foot traffic<br/>+ in-store sales uplift"]:::step
+        V3["BB: new revenue stream<br/>+ closed-loop attribution"]:::step
+    end
+
+    H --> SCENARIO
+    H --> MODELS
+    H --> CONNECT
+    H --> VALUE
+`},
+
+  b2c: {
+    title: "Why Customers Care (aside)",
+    meta: "the customer-value layer that keeps users returning — not the main focus",
+    src: `
+flowchart LR
+${CLASSES}
+    H["<b>Customer Value Layer</b><br/>the reasons users download,<br/>return, and stay"]:::header
+
+    subgraph BF["💸 Brand-funded"]
+        direction TB
+        BF1["Free product<br/>at signup<br/><i>inside Trial campaign</i>"]:::aside
+        BF2["Off-machine cashback<br/>on partner brand SKUs<br/><i>via receipt scan</i>"]:::aside
+    end
+
+    subgraph WR["♻️ Waste-recovery funded"]
+        direction TB
+        WR1["Dead-stock / expiring product<br/>free or steep discount<br/><i>gated behind loyalty signup</i>"]:::aside
+        WR2["Survey participation reward<br/>extra points for completing<br/><i>post-trial product survey</i>"]:::aside
+    end
+
+    subgraph MF["🏷️ Margin-funded"]
+        direction TB
+        MF1["Streak rewards<br/>every 10 machine<br/>purchases = 1 free"]:::aside
+        MF2["Exclusive online bundles<br/>'selling what's not in the machine'"]:::aside
+        MF3["Subscriptions<br/>recurring bundle +<br/>monthly free vend"]:::aside
+        MF4["Premium on-machine UX<br/>blue glow · member-only interface<br/><i>retention through experience</i>"]:::aside
+    end
+
+    H --> BF
+    H --> WR
+    H --> MF
+`}
+};
+
+// ============================================================
+// Render + state
+// ============================================================
+mermaid.initialize({
+  startOnLoad: false,
+  securityLevel: "loose",
+  theme: "base",
+  themeVariables: {
+    fontFamily: '"Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+    fontSize: "13px",
+    background: "#F0F2F5",
+    primaryColor: "#1A6BFF",
+    primaryTextColor: "#0D0F14",
+    primaryBorderColor: "#1A6BFF",
+    lineColor: "#8CA0FD",
+    clusterBkg: "#F5F7FA",
+    clusterBorder: "#D6DCE3"
+  }
+});
+
+const svgCache = {};
+let panZoom = null;
+let current = null;
+
+async function renderDiagram(key) {
+  const d = DIAGRAMS[key];
+  if (!d) return;
+  current = key;
+
+  document.getElementById("panel-title").textContent = d.title;
+  document.getElementById("panel-meta").textContent = d.meta;
+
+  let svgText = svgCache[key];
+  if (!svgText) {
+    const { svg } = await mermaid.render("chart-" + key + "-" + Date.now(), d.src);
+    svgText = svg;
+    svgCache[key] = svg;
+  }
+
+  // tear down previous pan/zoom
+  if (panZoom) { try { panZoom.destroy(); } catch(e){} panZoom = null; }
+
+  document.getElementById("chart").innerHTML = svgText;
+  const svgEl = document.querySelector("#chart svg");
+  svgEl.removeAttribute("style");
+  svgEl.style.background = "#F0F2F5";
+
+  panZoom = svgPanZoom(svgEl, {
+    zoomEnabled: true,
+    controlIconsEnabled: false,
+    fit: true,
+    center: true,
+    minZoom: 0.2,
+    maxZoom: 10,
+    zoomScaleSensitivity: 0.35,
+  });
+}
+
+function setActive(key) {
+  document.querySelectorAll(".tab").forEach(t => {
+    t.classList.toggle("active", t.dataset.tab === key);
+  });
+}
+
+document.querySelectorAll(".tab").forEach(tab => {
+  tab.addEventListener("click", () => {
+    const key = tab.dataset.tab;
+    setActive(key);
+    renderDiagram(key).catch(err => {
+      document.getElementById("chart").innerHTML =
+        "<pre style='color:#dc2626;padding:20px;'>Render error:\n" + err.message + "</pre>";
+      console.error(err);
+    });
+    history.replaceState(null, "", "#" + key);
+  });
+});
+
+document.getElementById("legend-toggle").addEventListener("click", () => {
+  document.getElementById("legend").classList.toggle("collapsed");
+});
+
+window.addEventListener("resize", () => {
+  if (panZoom) { panZoom.resize(); panZoom.fit(); panZoom.center(); }
+});
+
+// Initial load — honor hash or default to phase-0 (the current focus)
+const initial = (location.hash || "").replace("#", "") || "phase-0";
+const startKey = DIAGRAMS[initial] ? initial : "phase-0";
+setActive(startKey);
+renderDiagram(startKey).catch(console.error);
+</script>
+
+</body>
+</html>
