@@ -497,12 +497,12 @@ ${CLASSES}
 `},
 
   "phase-2": {
-    title: "Phase 2 — Retention + 2nd Campaign",
-    meta: "retention mechanics · premium on-machine UX · identity upgrades · second brand campaign",
+    title: "Phase 2 — Retention + Tier-Segmented Audience Product",
+    meta: "retention mechanics · premium on-machine UX · identity upgrades · tier-gated reach as a sellable product",
     src: `
 flowchart LR
 ${CLASSES}
-    H["<b>Phase 2</b><br/>Objective: turn identified<br/>users into repeat visitors"]:::header
+    H["<b>Phase 2</b><br/>Objective: turn identified users<br/>into repeat visitors + unlock<br/>tier-segmented audience as<br/>a brand-facing commercial product"]:::header
 
     subgraph BUILD["Build"]
         direction TB
@@ -510,52 +510,132 @@ ${CLASSES}
         B2["Premium on-machine UX<br/>blue glow · points visible · member-only UI<br/>visually distinct from non-member screen"]:::step
         B3["Identity upgrade: USB NFC reader<br/>~$13/unit · open USB port on machine<br/>reads Wallet passes or NFC loyalty cards"]:::step
         B4["Card-linked earning<br/>Adyen card alias · recognise returning card<br/>auto-earn without scanning"]:::step
-        B5["Bright Connect integration<br/>loyalty campaign tools inside Connect"]:::tbd
-        B1 --> B2 --> B3 --> B4 --> B5
+        B5["Tier activation<br/>Bronze → Ultra Diamond live<br/>thresholds calibrated on Phase 1 data"]:::stepFocus
+        B6["Tier-gated offer infra<br/>required_tier on promos<br/>preview-state UI for below-tier users<br/>progress-to-unlock indicator"]:::stepFocus
+        B7["Bright Connect integration<br/>tier-segmented audience filter<br/>in brand campaign builder"]:::stepFocus
+        B8["Cross-sell selector v1 ⭐<br/>late Phase 2 · system-generated only<br/>Vector 1: machine → online stock-up<br/>auto-saved offer on kiosk purchase<br/>proves lift on our data before selling it"]:::stepFocus
+        B1 --> B2 --> B3 --> B4 --> B5 --> B6 --> B7 --> B8
     end
 
-    subgraph SELL["Sell"]
+    subgraph SELL["Sell — the headline commercial product ⭐"]
         direction TB
-        S1["2nd brand Trial campaign<br/>with survey insight package"]:::step
-        S2["Upgrade Reach package<br/>with engagement + survey reporting"]:::step
-        S3["Guest campaign mid-flight rescue<br/>loyalty discount + survey on underperformers"]:::step
+        S1["Tier-Segmented Reach ⭐<br/>brands pay premium to target<br/>Silver+ or Gold+ segments only<br/>audience scarcity = price lever"]:::stepFocus
+        S2["Premium brand positioning ⭐<br/>luxury / challenger brands want<br/>curated distribution, not mass blast<br/>protects brand equity"]:::stepFocus
+        S3["Card Member Benefits frame ⭐<br/>Amex-style pitch to retailers:<br/>'reach our highest-value customers<br/>with your best offer'"]:::stepFocus
+        S4["2nd brand Trial campaign<br/>with survey insight package"]:::step
+        S5["Upgrade Reach package<br/>with engagement + survey reporting"]:::step
+        S6["Guest campaign mid-flight rescue<br/>loyalty discount + survey on underperformers"]:::step
     end
 
-    GATE["<b>Gate to Phase 3</b><br/>meaningful 2nd-purchase rate<br/>on identified cohort"]:::gate
+    subgraph AUDIENCE["Audience cards — how we pitch each tier (numbers illustrative, calibrate on Phase 1 data)"]
+        direction TB
+        A1["<b>Open Reach</b> — all identified members<br/>mixed LTV · avg ~$15/mo spend<br/>100% of base · broad awareness buy<br/>1× base CPM"]:::step
+        A2["<b>Bright (Silver+)</b> — engaged regulars<br/>~$25 – $50/mo spend · $300 – $600 annualised<br/>~40% of base · 2× visits/week<br/>2× base CPM"]:::stepFocus
+        A3["<b>Brilliant (Gold+)</b> — high-value core<br/>~$60 – $120/mo spend · $700 – $1,400 annualised<br/>~15% of base · 3+ visits/week · online buyers<br/>3.5× base CPM"]:::stepFocus
+        A4["<b>Elite (Platinum / Diamond)</b> — top percentile<br/>$150+/mo · $1,800+ annualised · subscription holders<br/>~5% of base · weekly cadence · high-NPS cohort<br/>5× base CPM"]:::stepFocus
+        A1 --> A2 --> A3 --> A4
+    end
+
+    subgraph PITCH["Sell-sheet language for brands"]
+        direction TB
+        Q1["Lead with annualised spend,<br/>not tier name<br/><i>'$1,400/year customers'</i>"]:::step
+        Q2["Quantify scarcity<br/><i>'only 15% of our base'</i>"]:::step
+        Q3["Show frequency signal<br/><i>'3+ visits/week at our machines'</i>"]:::step
+        Q4["Benchmark vs open reach<br/><i>'3.5× premium on CPM reflects<br/>3.5× higher avg spend'</i>"]:::step
+        Q1 --> Q2 --> Q3 --> Q4
+    end
+
+    subgraph FOOTPRINT["Why our LTV numbers are credible — the full data footprint"]
+        direction TB
+        F1["Machine purchases<br/>amount · brand · category · frequency<br/><i>live Phase 1</i>"]:::step
+        F2["Shop.bright.express orders<br/>basket composition · cadence<br/>subscription holder flag<br/><i>live Phase 1</i>"]:::step
+        F3["Gym context signal<br/>venue = Snap Fitness<br/>implied active gym membership<br/>fitness-category intent<br/><i>free inference</i>"]:::step
+        F4["Visit frequency + streaks<br/>NFC / card-linked recognition<br/>gym cadence as behavioural proxy<br/><i>Phase 2</i>"]:::step
+        F5["Survey responses<br/>stated preference + brand awareness<br/>first-party zero-party data<br/><i>Phase 1+</i>"]:::step
+        F6["Off-machine receipt scan<br/>category spend at Asda · Boots · etc.<br/>entire CPG wallet, not just our shelf<br/><i>Phase 3 — compounds further</i>"]:::tbd
+    end
+
+    subgraph DIFF["Positioning vs other retail media networks"]
+        direction TB
+        D1["Most machine RMNs<br/>sell impressions only<br/>no purchase attribution"]:::step
+        D2["Most digital retail networks<br/>see one channel<br/>(either online OR in-store)"]:::step
+        D3["<b>We see five</b><br/>machine + online + subscription<br/>+ gym context + receipt scan<br/><i>unique triangulated LTV</i>"]:::stepFocus
+        D1 --> D2 --> D3
+    end
+
+    GATE["<b>Gate to Phase 3</b><br/>meaningful 2nd-purchase rate<br/>+ first tier-segmented brand deal signed"]:::gate
 
     H --> BUILD
     H --> SELL
+    H --> AUDIENCE
+    H --> PITCH
+    H --> FOOTPRINT
+    H --> DIFF
     BUILD --> GATE
     SELL --> GATE
 `},
 
   "phase-3": {
-    title: "Phase 3 — Off-Machine (Anywhere Conversion)",
-    meta: "boilerplate · receipt-scan attribution + shop online launches",
+    title: "Phase 3 — Off-Machine + Cross-Sell Marketplace",
+    meta: "receipt-scan attribution · shop online launches · brand-authored cross-sell via Connect",
     src: `
 flowchart LR
 ${CLASSES}
-    H["<b>Phase 3</b><br/>Objective: prove exposure drives<br/>purchases beyond our machines"]:::header
+    H["<b>Phase 3</b><br/>Objective: prove exposure drives<br/>purchases beyond our machines<br/>+ open cross-sell as a<br/>brand-sellable product"]:::header
 
-    subgraph BUILD["Build (TBD)"]
+    subgraph BUILD["Build"]
         direction TB
         B1["TBD — receipt scan SDK"]:::tbd
         B2["TBD — brand SKU registry"]:::tbd
-        B3["TBD — rules engine"]:::tbd
+        B3["Cross-sell selector v2 ⭐<br/>extends Phase 2 selector<br/>rule authoring + eligibility + delivery<br/>supports Vectors 2–5"]:::stepFocus
         B4["TBD — reward payout"]:::tbd
+        B5["Connect cross-sell authoring ⭐<br/>brand self-serve rule builder<br/>signal → response → channel UI<br/>hybrid approval queue (admin frontend)"]:::stepFocus
+        B6["Category-exclusivity engine ⭐<br/>protects catalog relationships<br/>Anchor-tier brands opt out of<br/>being cross-sold against"]:::stepFocus
+        B7["In-session kiosk upsell ⭐<br/>Vector 4 · firmware-side<br/>one-tap add-on on payment screen<br/>depends on premium on-machine UX"]:::stepFocus
+        B1 --> B2 --> B3 --> B4 --> B5 --> B6 --> B7
     end
 
-    subgraph SELL["Sell (TBD)"]
+    subgraph MARKETPLACE["Cross-Sell Marketplace — brand-sellable vectors ⭐"]
         direction TB
-        S1["TBD — Anywhere Conversion package<br/>brand-funded off-machine reward"]:::tbd
-        S2["TBD — shop online bundles<br/>'selling what's not in the machine'"]:::tbd
+        V2["<b>Vector 2 — Brand-range</b><br/>same brand, adjacent SKU<br/><i>'Rock Face deodorant → Rock Face candle'</i><br/>per verified conversion"]:::stepFocus
+        V3["<b>Vector 3 — Complement</b><br/>different brand, related category<br/><i>'pre-workout → protein bar'</i><br/>per verified conversion"]:::stepFocus
+        V4["<b>Vector 4 — In-session upsell</b><br/>kiosk payment-screen add-on<br/>premium inventory · brand-funded slot"]:::stepFocus
+        V5["<b>Vector 5 — Competitive displacement</b><br/>brand A → brand B same category<br/>tier-gated by default · category-exclusivity enforced<br/>premium pricing · highest-risk / highest-value"]:::stepFocus
+        V2 --> V3 --> V4 --> V5
     end
 
-    GATE["<b>Gate to Phase 4</b><br/>first verified off-machine redemption"]:::gate
+    subgraph SELL["Sell"]
+        direction TB
+        S1["Anywhere Conversion package<br/>brand-funded off-machine reward<br/>Vector 5 sibling · receipt-scan fed"]:::tbd
+        S2["Shop online bundles<br/>'selling what's not in the machine'"]:::tbd
+        S3["Cross-sell campaigns in Connect ⭐<br/>brands author rules · we approve<br/>trusted brands graduate to auto-approve"]:::stepFocus
+        S4["Tier-segmented cross-sell ⭐<br/>any vector can filter to<br/>Silver+ / Gold+ / Diamond+<br/>stacks on Phase 2 pricing ladder"]:::stepFocus
+    end
+
+    subgraph AUTHOR["Authoring model — hybrid self-serve"]
+        direction TB
+        M1["Brand composes rule in Connect<br/>signal (trigger SKU/brand/category)<br/>→ response (offer + reward)<br/>→ channel + tier filter"]:::step
+        M2["Approval queue in admin frontend<br/>review for spam · quality · exclusivity conflicts"]:::step
+        M3["Trusted brands → auto-approve<br/>after N successful campaigns<br/>with clean lift data"]:::step
+        M1 --> M2 --> M3
+    end
+
+    subgraph GUARDRAILS["Guardrails — protect the catalog"]
+        direction TB
+        G1["Complement before displace<br/>Vector 3 prioritised over Vector 5<br/>in selector when both apply"]:::step
+        G2["Category-exclusivity for Anchor brands<br/>opt out of being Vector 5'd<br/>priced as a defensive product"]:::step
+        G3["Rate limits per user<br/>no more than N cross-sell pushes/week<br/>saved offers don't count (user-initiated)"]:::step
+    end
+
+    GATE["<b>Gate to Phase 4</b><br/>first verified off-machine redemption<br/>+ first brand-authored cross-sell campaign<br/>approved, run, and reporting positive lift"]:::gate
 
     H --> BUILD
+    H --> MARKETPLACE
     H --> SELL
+    H --> AUTHOR
+    H --> GUARDRAILS
     BUILD --> GATE
+    MARKETPLACE --> GATE
     SELL --> GATE
 `},
 
