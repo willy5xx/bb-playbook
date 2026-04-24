@@ -451,12 +451,12 @@ ${CLASSES}
 `},
 
   "phase-1": {
-    title: "Phase 1 — MVP Launch",
-    meta: "trial package pilot · 7-day brand-funded sampling",
+    title: "Phase 1 — MVP Launch + Retention Kernel",
+    meta: "trial pilot · saved-offers wallet · weekly offer drop ritual",
     src: `
 flowchart LR
 ${CLASSES}
-    H["<b>Phase 1</b><br/>Objective: execute first pilot<br/>+ prove brand willingness to pay"]:::header
+    H["<b>Phase 1</b><br/>Objective: execute first pilot<br/>+ ship retention kernel<br/>(saved offers + weekly drops)"]:::header
 
     subgraph RUN["Pilot execution"]
         direction TB
@@ -468,18 +468,31 @@ ${CLASSES}
         R1 --> R2 --> R3 --> R4 --> R5
     end
 
+    subgraph RETAIN["Retention kernel ⭐"]
+        direction TB
+        X1["Saved Offers wallet ⭐<br/>tap-to-save any promo<br/>90-day wallet life<br/>decoupled from 7-day active window"]:::stepFocus
+        X2["Weekly offer drop ritual<br/>new promos land every [day]<br/>push + in-app banner<br/>predictable reason to open app"]:::stepFocus
+        X3["Auto-apply at checkout<br/>machine + Shopify<br/>receipt line shows which<br/>saved offer fired"]:::stepFocus
+        X4["Three offer archetypes<br/>user-claimed · scarcity-capped<br/>· system-generated cross-sell"]:::stepFocus
+        X1 --> X2 --> X3 --> X4
+    end
+
     subgraph TARGETS["Targets"]
         direction TB
         T1["500 – 1,000<br/>identified users"]:::step
         T2["Cost per identified user<br/>≤ COGS of sample"]:::step
         T3["Samples dispensed<br/>per campaign day"]:::step
+        T4["≥ 30% of identified users<br/>save at least one offer"]:::stepFocus
+        T5["Weekly-drop open rate<br/>≥ baseline push rate"]:::stepFocus
     end
 
-    GATE["<b>Gate to Phase 2</b><br/>1 brand renews OR 2nd brand signs"]:::gate
+    GATE["<b>Gate to Phase 2</b><br/>1 brand renews OR 2nd brand signs<br/>+ saved-offer redemption rate validates retention hook"]:::gate
 
     H --> RUN
+    H --> RETAIN
     H --> TARGETS
     RUN --> GATE
+    RETAIN --> GATE
     TARGETS --> GATE
 `},
 
@@ -547,17 +560,18 @@ ${CLASSES}
 `},
 
   "phase-4": {
-    title: "Phase 4 — Measurement Product",
-    meta: "boilerplate · always-on attribution + Brand ↔ Retailer bridge",
+    title: "Phase 4 — Measurement Product + ML Personalisation",
+    meta: "boilerplate · always-on attribution · Brand ↔ Retailer bridge · data-scale-gated ML recommender",
     src: `
 flowchart LR
 ${CLASSES}
-    H["<b>Phase 4</b><br/>Objective: sell attribution<br/>as its own product"]:::header
+    H["<b>Phase 4</b><br/>Objective: sell attribution<br/>as its own product + unlock<br/>ML-driven personalisation"]:::header
 
     subgraph BUILD["Build (TBD)"]
         direction TB
         B1["TBD — lift study infra<br/>synthetic control methodology"]:::tbd
         B2["TBD — always-on<br/>attribution dashboard"]:::tbd
+        B3["TBD — ML personalisation layer<br/>replaces rules-based affinity<br/>from Phase 2 · gated on transaction<br/>volume, not calendar time"]:::tbd
     end
 
     subgraph SELL["Sell (TBD)"]
@@ -565,12 +579,22 @@ ${CLASSES}
         S1["TBD — measurement product<br/>monthly measurement fee"]:::tbd
         S2["TBD — Brand ↔ Retailer bridge<br/>entry fee + per-trip"]:::tbd
         S3["TBD — subscriptions mature"]:::tbd
+        S4["TBD — personalised cross-sell<br/>premium brand tier<br/>priced above rules-based tier"]:::tbd
     end
 
-    GATE["<b>Gate to Phase 5</b><br/>first paid measurement contract"]:::gate
+    subgraph NOTES["Personalisation note"]
+        direction TB
+        N1["Don't build ML before<br/>data justifies it"]:::step
+        N2["Phase 2 ships rules-based<br/>category-affinity recommender<br/>over product_context metadata"]:::step
+        N3["Upgrade to learned model<br/>only once transaction volume<br/>supports meaningful training set"]:::step
+        N1 --> N2 --> N3
+    end
+
+    GATE["<b>Gate to Phase 5</b><br/>first paid measurement contract<br/>+ ML recommender beats rules-based in A/B"]:::gate
 
     H --> BUILD
     H --> SELL
+    H --> NOTES
     BUILD --> GATE
     SELL --> GATE
 `},
@@ -729,43 +753,39 @@ ${CLASSES}
 `},
 
   "points-arch": {
-    title: "Points Architecture — Open Question",
-    meta: "Apr 23 call · stamps vs currency model · needs modelling before Phase 1 ships",
+    title: "Points Architecture — Resolved",
+    meta: "currency model locked · 10 pts / $1 · 100 pts = $1.00 · see documentation/point_system.md",
     src: `
 flowchart LR
 ${CLASSES}
-    H["<b>Points Architecture</b><br/>open decision · model with<br/>real Snap margin data"]:::headerFocus
+    H["<b>Points Architecture</b><br/>✅ resolved Apr 2026<br/>currency model · 10 pts / $1"]:::headerFocus
 
-    subgraph CURRENCY["💰 Currency model (current default)"]
+    subgraph CHOSEN["✅ Currency model (locked)"]
         direction TB
-        C1["1 point per £1 spent"]:::step
-        C2["Points have fractional £ value"]:::step
-        C3["Supports earn multipliers<br/>1.25x machine · 1.50x app · 2.0x bundles"]:::step
-        C4["Flexible for brand-funded<br/>bonus points at scale"]:::step
-        C5["Downside: users do<br/>mental maths on point values"]:::step
+        C1["10 pts per $1 spent"]:::stepFocus
+        C2["100 pts = $1.00<br/>user-facing wallet value"]:::stepFocus
+        C3["Channel multipliers<br/>1.0× machine · 1.5× online<br/>2.0× subscription"]:::stepFocus
+        C4["Flexible for brand-funded<br/>bonus points + saved offers"]:::stepFocus
+        C5["Enables cross-sell math<br/>'what customers do next' frame"]:::stepFocus
     end
 
-    subgraph STAMPS["⭐ Stamps model (Will proposal)"]
+    subgraph WHY["Why currency over stamps"]
         direction TB
-        S1["1 product = 1 stamp<br/>regardless of price"]:::step
-        S2["10 stamps = 1 free product"]:::step
-        S3["Coffee-card psychology<br/>simple and familiar"]:::step
-        S4["Does not incentivise<br/>buying expensive products"]:::step
-        S5["Harder to differentiate<br/>in-app vs at-machine earn rates"]:::step
+        W1["Stamps can't express<br/>channel-shift multipliers"]:::step
+        W2["Stamps can't bank as cash<br/>breaks saved-offer / wallet UX"]:::step
+        W3["Sparks teardown validates:<br/>real money in a wallet beats<br/>abstract stamps for retention"]:::step
     end
 
-    subgraph DECIDE["Must resolve before Phase 1"]
+    subgraph SOURCE["Source of truth"]
         direction TB
-        D1["What is the value of a point?"]:::stepFocus
-        D2["What multiplier for app purchases?"]:::stepFocus
-        D3["At what intervals do<br/>free products drop?"]:::stepFocus
-        D4["LTV of customer must justify<br/>cost of free-product rewards<br/>even at conservative estimates"]:::stepFocus
-        D1 --> D2 --> D3 --> D4
+        SR1["documentation/<br/>point_system.md"]:::step
+        SR2["§1 core formula · §3 redemption<br/>§5 bonus events · §8 all parameters"]:::step
+        SR1 --> SR2
     end
 
-    H --> CURRENCY
-    H --> STAMPS
-    H --> DECIDE
+    H --> CHOSEN
+    H --> WHY
+    H --> SOURCE
 `},
 
   "off-machine-detail": {
