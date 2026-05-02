@@ -217,6 +217,8 @@
       <button class="tab" data-tab="identity-research">Identity Resolution <span class="pill">NEW</span></button>
       <button class="tab" data-tab="points-arch">Points Architecture <span class="pill">NEW</span></button>
       <button class="tab" data-tab="off-machine-detail">Off-Machine Models <span class="pill">NEW</span></button>
+      <button class="tab" data-tab="attribution-model">Attribution Products <span class="pill">NEW</span></button>
+      <button class="tab" data-tab="acquisition-retention">Acquisition &amp; Retention <span class="pill">NEW</span></button>
     </div>
 
     <div class="nav-section">
@@ -971,34 +973,153 @@ ${CLASSES}
     H --> VALUE
 `},
 
+  "attribution-model": {
+    title: "Attribution Products — What Brands Pay For",
+    meta: "four channels · outcome-based pricing · why this beats CPM · north star: provable behavior change",
+    src: `
+flowchart LR
+${CLASSES}
+    H["<b>Attribution Products</b><br/>four channels brands pay for<br/>outcome-based, not CPM<br/>north star: provable behavior change"]:::headerFocus
+
+    subgraph CHANNELS["Four attribution channels — in build-readiness order"]
+        direction TB
+        C1["<b>① New-to-Brand Acquisition</b> ⭐<br/>identify users who never bought Brand X<br/>campaign drives their first verified trial<br/><i>brand pays: per verified new customer</i><br/>benchmark directly against brand's own CAC<br/>Status: buildable now with SKU linkage"]:::stepFocus
+        C2["<b>② Post-Trial Repeat Rate</b> ⭐<br/>of new-to-brand customers acquired,<br/>what % purchased again in 30 / 90 days?<br/><i>brand pays: premium tier on base fee</i><br/>proves trial converted to habit, not just trial<br/>Status: buildable now, needs time-window query"]:::stepFocus
+        C3["<b>③ Behavioral Frequency Lift</b><br/>existing brand buyers in campaign:<br/>purchase frequency 60 days pre vs post<br/><i>brand pays: measurement subscription</i><br/>proves campaign reinforced loyalty<br/>Needs: holdout group added to campaign wizard"]:::step
+        C4["<b>④ Off-Network Influence</b><br/>user buys Brand X at Tesco,<br/>scans receipt → earns cashback<br/>brand-funded coupon → verified retailer visit<br/><i>brand pays: per verified off-machine redemption<br/>retailer pays: foot-traffic attribution fee</i><br/>Needs: Veryfi SDK (Phase 3)"]:::tbd
+        C1 --> C2 --> C3 --> C4
+    end
+
+    subgraph PRICING["Pricing model — outcome-based, not CPM"]
+        direction TB
+        P1["Audience access<br/>flat fee to reach defined segment<br/>entry point · scales by tier<br/>stacks with Audience Product ladder"]:::step
+        P2["Cost per verified new customer ⭐<br/>channel 1 unit price<br/>brands compare directly to<br/>their existing CAC benchmarks"]:::stepFocus
+        P3["Repeat conversion bonus ⭐<br/>premium charged when new customer<br/>makes second purchase within 90 days<br/>incentive alignment: we earn more when it works"]:::stepFocus
+        P4["Attribution report subscription<br/>always-on dashboard · channels 1–3<br/>monthly measurement fee<br/>brands without active campaigns still pay"]:::step
+        P5["Off-machine redemption fee<br/>per verified receipt scan match<br/>+ retailer foot-traffic attribution charge<br/>Phase 3"]:::tbd
+        P1 --> P2 --> P3 --> P4 --> P5
+    end
+
+    subgraph WHY["Why outcome-based beats CPM"]
+        direction TB
+        W1["CPM = commodity media buy<br/>bright.blue becomes interchangeable<br/>with any DOOH or OOH network<br/>no pricing power, high churn"]:::step
+        W2["This model = performance channel<br/>with verified 1st-party purchase proof<br/>defensible · premium-priced · renewable"]:::stepFocus
+        W3["Brands take these numbers to CFO<br/>as hard ROI proof not just<br/>impressions, clicks, or intent signals"]:::stepFocus
+        W4["Machine is the trial vehicle<br/>the question brands actually pay for<br/>is: what happened after the trial?"]:::stepFocus
+        W1 --> W2 --> W3 --> W4
+    end
+
+    subgraph PREREQS["Build requirements per channel"]
+        direction TB
+        PR1["Channels 1 + 2<br/>SKU linkage per customer ✅<br/>campaign interaction events ✅<br/>purchase time-window query ✅<br/>ready to ship"]:::stepFocus
+        PR2["Channel 3<br/>holdout group assignment<br/>in campaign wizard setup step<br/>small addition, high statistical value"]:::step
+        PR3["Channel 4<br/>receipt scan SDK (Veryfi)<br/>brand SKU registry<br/>reward payout rules engine<br/>Phase 3 build"]:::tbd
+        PR1 --> PR2 --> PR3
+    end
+
+    H --> CHANNELS
+    H --> PRICING
+    H --> WHY
+    H --> PREREQS
+`},
+
+  "acquisition-retention": {
+    title: "Customer Acquisition & Retention Model",
+    meta: "how we get users on the platform and keep them · the loop that powers the brand data product",
+    src: `
+flowchart TB
+${CLASSES}
+    H["<b>Acquisition &amp; Retention</b><br/>without a meaningful identified user base<br/>the brand data product has no scale<br/>this is the loop that powers everything"]:::headerFocus
+
+    subgraph ACQUIRE["Acquisition channels"]
+        direction TB
+        A1["Post-vend QR ⭐<br/>every machine purchase shows a QR<br/>'You earned £0.80 — scan to claim'<br/>loss-aversion framing, not generic CTA<br/>Phase 0"]:::stepFocus
+        A2["DOOH QR<br/>digital signage at or near machine<br/>acquires customers who didn't purchase<br/>separate source tag from post-vend<br/>Phase 1"]:::stepFocus
+        A3["Dead-stock giveaway<br/>free or steep discount<br/>gated behind loyalty signup<br/>near-zero cost acquisition<br/>Phase 0"]:::stepFocus
+        A4["Word of mouth<br/>only viable once points = real money<br/>and the app has obvious daily utility<br/>Phase 2+"]:::step
+    end
+
+    subgraph FRICTION["Reduce signup friction"]
+        direction TB
+        F1["Phone number + OTP ⭐<br/>15 seconds while standing at machine<br/>no email client, no password recall<br/>every extra step halves completion rate"]:::stepFocus
+        F2["Immediate value on landing<br/>show earned points balance before asking<br/>for any personal information<br/>earned-but-unclaimed framing"]:::stepFocus
+        F3["Apple Wallet pass at signup<br/>keeps bright.blue in wallet<br/>even when user never opens app<br/>passive brand presence"]:::step
+    end
+
+    subgraph RETAIN["Retention hooks — what brings them back"]
+        direction TB
+        R1["Points = real money ⭐<br/>100 pts = £1, always, stated clearly<br/>visible currency balance, not a score<br/>M&amp;S Sparks teardown validates this"]:::stepFocus
+        R2["Receipt scan habit loop ⭐<br/>scan any receipt, earn on anything<br/>every shop trip is an earn event<br/>regular app opens without needing a kiosk visit<br/>Phase 3"]:::stepFocus
+        R3["Weekly offer drop<br/>new brand-funded promos every [day]<br/>predictable cadence creates expectation<br/>push + in-app banner"]:::stepFocus
+        R4["Streak mechanic<br/>every 10 purchases = 1 free<br/>visible progress toward a concrete reward<br/>Phase 2"]:::step
+        R5["Saved offers wallet<br/>tap-to-save, 90-day wallet life<br/>decoupled from 7-day active window<br/>reduces FOMO, increases return intent"]:::step
+        R6["Tier progress indicator<br/>'100 pts from Silver'<br/>visible in-app + on machine screen<br/>gamified without being hollow"]:::step
+    end
+
+    subgraph ECONOMICS["Points economics — who funds what"]
+        direction TB
+        E1["Machine purchase points<br/>funded: product margin<br/>cost is built into the kiosk price floor"]:::step
+        E2["Brand campaign points<br/>funded: brand's campaign budget<br/>brand pays to put points in front of users"]:::stepFocus
+        E3["Receipt scan cashback<br/>funded: brand attribution fee<br/>brand pays for the verified purchase signal<br/>+ retailer pays for the foot traffic"]:::stepFocus
+        E4["Breakage buffer<br/>industry standard 20–40% of issued points<br/>never redeemed<br/>effective liability always below face value"]:::step
+        E5["Rule: only issue points<br/>when a commercial event funds them<br/>never issue as a speculative loss-leader<br/>no open-ended liability"]:::stepFocus
+        E1 --> E5
+        E2 --> E5
+        E3 --> E5
+        E4 --> E5
+    end
+
+    subgraph METRIC["The metric that proves the loop works"]
+        direction TB
+        M1["Identified user rate<br/>signups / total kiosk vends<br/>target: 20–30%+ before brand product scales"]:::stepFocus
+        M2["D30 retention<br/>% of signups who make a second purchase<br/>within 30 days"]:::stepFocus
+        M3["Weekly active rate<br/>% of signed-up users who open app<br/>or scan a receipt in any given week<br/>receipt scan unlocks this metric meaningfully"]:::step
+    end
+
+    H --> ACQUIRE
+    H --> FRICTION
+    H --> RETAIN
+    H --> ECONOMICS
+    H --> METRIC
+`},
+
   b2c: {
     title: "Why Customers Care (aside)",
-    meta: "the customer-value layer that keeps users returning — not the main focus",
+    meta: "the customer-value layer that keeps users downloading, returning, and staying",
     src: `
 flowchart LR
 ${CLASSES}
     H["<b>Customer Value Layer</b><br/>the reasons users download,<br/>return, and stay"]:::header
 
-    subgraph BF["💸 Brand-funded"]
+    subgraph HF["🔄 Habit-forming engagement (the daily utility layer)"]
         direction TB
-        BF1["Free product<br/>at signup<br/><i>inside Trial campaign</i>"]:::aside
-        BF2["Off-machine cashback<br/>on partner brand SKUs<br/><i>via receipt scan</i>"]:::aside
+        HF1["Receipt scan → earn on anything ⭐<br/>scan any grocery / retail receipt<br/>earn points on every Brand X purchase anywhere<br/>every shop trip = reason to open the app<br/><i>Phase 3 · the biggest retention unlock</i>"]:::stepFocus
+        HF2["Points = real money ⭐<br/>100 pts = £1, always visible<br/>a balance to protect, not a score to ignore<br/><i>M&amp;S Sparks model: real wallet beats lottery</i>"]:::stepFocus
+        HF3["Weekly offer drop<br/>predictable cadence of new brand promos<br/>push notification + in-app banner<br/><i>a reason to open without purchasing</i>"]:::stepFocus
+    end
+
+    subgraph BF["💸 Brand-funded rewards"]
+        direction TB
+        BF1["Free product at signup<br/>inside Trial sampling campaign<br/><i>Phase 1</i>"]:::aside
+        BF2["Off-machine cashback<br/>brand funds reward on verified<br/>receipt scan of their SKU<br/><i>Phase 3</i>"]:::aside
+        BF3["Brand coupon / voucher<br/>drives verified retailer visit<br/>brands love attribution proof<br/>retailers love foot traffic<br/><i>Phase 3</i>"]:::aside
     end
 
     subgraph WR["♻️ Waste-recovery funded"]
         direction TB
-        WR1["Dead-stock / expiring product<br/>free or steep discount<br/><i>gated behind loyalty signup</i>"]:::aside
-        WR2["Survey participation reward<br/>extra points for completing<br/><i>post-trial product survey</i>"]:::aside
+        WR1["Dead-stock / expiring product<br/>free or steep discount<br/>gated behind loyalty signup<br/><i>near-zero cost acquisition</i>"]:::aside
+        WR2["Survey participation reward<br/>extra points for post-trial survey<br/><i>brand buys the insight data</i>"]:::aside
     end
 
-    subgraph MF["🏷️ Margin-funded"]
+    subgraph MF["🏷️ Margin-funded perks"]
         direction TB
-        MF1["Streak rewards<br/>every 10 machine<br/>purchases = 1 free"]:::aside
-        MF2["Exclusive online bundles<br/>'selling what's not in the machine'"]:::aside
-        MF3["Subscriptions<br/>recurring bundle +<br/>monthly free vend"]:::aside
+        MF1["Streak rewards<br/>every 10 machine purchases = 1 free<br/><i>Phase 2</i>"]:::aside
+        MF2["Exclusive online bundles<br/>'selling what's not in the machine'<br/><i>Phase 3</i>"]:::aside
+        MF3["Subscriptions<br/>recurring bundle + monthly free vend<br/><i>Phase 4</i>"]:::aside
         MF4["Premium on-machine UX<br/>blue glow · member-only interface<br/><i>retention through experience</i>"]:::aside
     end
 
+    H --> HF
     H --> BF
     H --> WR
     H --> MF
